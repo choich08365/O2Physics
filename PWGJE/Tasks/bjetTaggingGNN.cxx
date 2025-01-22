@@ -13,7 +13,7 @@
 /// \brief  b-jet tagging using GNN
 ///
 /// \author Changhwan Choi <changhwan.choi@cern.ch>, Pusan National University
-//
+
 #include <algorithm>
 #include <cmath>
 
