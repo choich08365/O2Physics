@@ -191,6 +191,7 @@ struct BJetTreeCreator {
   // event level configurables
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
   Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
+  Configurable<bool> useEventWeight{"useEventWeight", true, "Flag whether to scale histograms with the event weight"};
 
   Configurable<std::vector<double>> jetPtBins{"jetPtBins", std::vector<double>{5, 1000}, "jet pT bins for reduction"};
   Configurable<std::vector<double>> jetReductionFactors{"jetReductionFactors", std::vector<double>{0.0}, "jet reduction factors"};
@@ -738,7 +739,7 @@ struct BJetTreeCreator {
         continue;
       }
 
-      float eventWeight = analysisJet.eventWeight();
+      float eventWeight = useEventWeight ? analysisJet.eventWeight() : 1.f;
 
       //+
       TrackLabelMap trkLabels{{"trkVtxIndex", {}}, {"trkOrigin", {}}};
@@ -746,16 +747,16 @@ struct BJetTreeCreator {
       analyzeJetTrackInfoForGNN(collision, analysisJet, allTracks, origTracks, tracksIndices, jetFlavor, eventWeight, &trkLabels);
 
       registry.fill(HIST("h2_jetMass_jetpT"), analysisJet.pt(), analysisJet.mass(), eventWeight);
-      registry.fill(HIST("h2_nTracks_jetpT"), analysisJet.pt(), tracksIndices.size());
+      registry.fill(HIST("h2_nTracks_jetpT"), analysisJet.pt(), tracksIndices.size(), eventWeight);
 
       //+jet
-      registry.fill(HIST("h_jet_pt"), analysisJet.pt());
-      registry.fill(HIST("h_jet_eta"), analysisJet.eta());
-      registry.fill(HIST("h_jet_phi"), analysisJet.phi());
-      registry.fill(HIST("h_jet_flav"), jetFlavor);
-      registry.fill(HIST("h_n_trks"), tracksIndices.size());
-      registry.fill(HIST("h_jet_mass"), analysisJet.mass());
-      registry.fill(HIST("h_n_vertices"), nVertices);
+      registry.fill(HIST("h_jet_pt"), analysisJet.pt(), eventWeight);
+      registry.fill(HIST("h_jet_eta"), analysisJet.eta()), eventWeight;
+      registry.fill(HIST("h_jet_phi"), analysisJet.phi(), eventWeight);
+      registry.fill(HIST("h_jet_flav"), jetFlavor, eventWeight);
+      registry.fill(HIST("h_n_trks"), tracksIndices.size(), eventWeight);
+      registry.fill(HIST("h_jet_mass"), analysisJet.mass(), eventWeight);
+      registry.fill(HIST("h_n_vertices"), nVertices, eventWeight);
 
       if (jetFlavor == 2) {
         registry.fill(HIST("h2_jetMass_jetpT_bjet"), analysisJet.pt(), analysisJet.mass(), eventWeight);
