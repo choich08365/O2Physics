@@ -524,7 +524,7 @@ struct BjetTaggingGnn {
       }
     }
     bool checkConstituentPt = true;
-    bool checkConstituentMinPt = (leadingConstituentPtMin > -98.0); // o2-linter: disable=magic-number
+    bool checkConstituentMinPt = (leadingConstituentPtMin > -98.0);  // o2-linter: disable=magic-number
     bool checkConstituentMaxPt = (leadingConstituentPtMax < 9998.0); // o2-linter: disable=magic-number
     if (!checkConstituentMinPt && !checkConstituentMaxPt) {
       checkConstituentPt = false;
